@@ -1,0 +1,26 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  position: relative;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Dyslexic";
+  src: local("Dyslexic"), url(./OpenDyslexic-Regular.otf) format("truetype");
+}
+
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  color: rgb(var(--v-theme-background-lighten-2));
+  background: rgb(var(--v-theme-background));
+  line-height: 1.6;
+  font-family: "Dyslexic";
+  font-size: 18px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

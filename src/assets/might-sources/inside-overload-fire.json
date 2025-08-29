@@ -1,0 +1,97 @@
+[
+	{
+		"name": "Fire overload tick 1",
+		"time": 0,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 2",
+		"time": 0.66,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 3",
+		"time": 1.35,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 4",
+		"time": 2.64,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 5",
+		"time": 3.3,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+
+	{
+		"name": "Fire overload tick 6",
+		"time": 4.3,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 7",
+		"time": 5.3,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 8",
+		"time": 6.3,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 9",
+		"time": 7.3,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+	{
+		"name": "Fire overload tick 10",
+		"time": 8.3,
+		"amount": 2,
+		"duration": 35,
+		"type": "aoe"
+	},
+
+	{
+		"name": "Heat sync",
+		"time": 3.35,
+		"amount": 3,
+		"duration": 23,
+		"type": "heat-sync"
+	},
+
+	{
+		"name": "Water 3 might blast",
+		"time": 3.8,
+		"amount": 3,
+		"duration": 43,
+		"type": "aoe"
+	},
+
+	{
+		"name": "Earth 4 might blast",
+		"time": 4.2,
+		"amount": 3,
+		"duration": 43,
+		"type": "aoe"
+	}
+]
