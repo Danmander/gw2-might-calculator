@@ -13,6 +13,6 @@ jobs:
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
         username: 'Danmander'
-        reponame: 'gw2-builds'
+        reponame: 'gw2-might-calculator'
         cname: 'might-calculator.danmander.com'
         token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
