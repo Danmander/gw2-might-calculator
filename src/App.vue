@@ -58,6 +58,7 @@
                     :model-value="mightSource"
                     @update:model-value="(value) => mightSources[index] = value"
                     @delete="deleteSource(index)"
+                    :second-inputs-precision="precision"
                 />
             </v-expansion-panels>
             <v-btn

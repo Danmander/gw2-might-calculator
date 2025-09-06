@@ -87,11 +87,13 @@
                     <v-text-field
                         :model-value="modelValue.amount"
                         @update:model-value="(value) => updateValue('amount', parseInt(value))"
-                        class="d-inline-block vertical-align-middle"
+                        class="d-inline-flex vertical-align-middle"
                         type="number"
                         density="compact"
                         variant="underlined"
-                        step="1"
+                        :step="1"
+                        :max="25"
+                        :min="0"
                         hide-details
                         single-line
                     >
@@ -107,7 +109,7 @@
                     <v-text-field
                         :model-value="modelValue.duration"
                         @update:model-value="(value) => updateValue('duration', parseFloat(value))"
-                        class="d-inline-block vertical-align-middle"
+                        class="d-inline-flex vertical-align-middle seconds"
                         type="number"
                         density="compact"
                         variant="underlined"
@@ -127,7 +129,7 @@
                         <v-text-field
                             :model-value="modelValue.time"
                             @update:model-value="(value) => updateValue('time', parseFloat(value))"
-                            class="d-inline-block vertical-align-middle"
+                            class="d-inline-flex vertical-align-middle seconds"
                             type="number"
                             density="compact"
                             variant="underlined"
@@ -145,7 +147,7 @@
                         <v-text-field
                             :model-value="modelValue.time"
                             @update:model-value="(value) => updateValue('time', parseFloat(value))"
-                            class="d-inline-block vertical-align-middle"
+                            class="d-inline-flex vertical-align-middle seconds"
                             type="number"
                             density="compact"
                             variant="underlined"
@@ -163,7 +165,7 @@
                         <v-text-field
                             :model-value="modelValue.cooldown"
                             @update:model-value="(value) => updateValue('cooldown', parseFloat(value))"
-                            class="d-inline-block vertical-align-middle "
+                            class="d-inline-flex vertical-align-middle seconds"
                             type="number"
                             density="compact"
                             variant="underlined"
@@ -179,7 +181,7 @@
                         <v-text-field
                             :model-value="modelValue.offset"
                             @update:model-value="(value) => updateValue('offset', parseFloat(value))"
-                            class="d-inline-block vertical-align-middle"
+                            class="d-inline-flex vertical-align-middle seconds"
                             type="number"
                             density="compact"
                             variant="underlined"
@@ -244,11 +246,13 @@ export default {
 .sentenced-setting:deep(.v-field__input) {
     padding-top: 0;
     padding-bottom: 0;
-    min-width: 70px;
-    width: fit-content;
+    padding-inline-end: 0;
 }
 .sentenced-setting:deep(input) {
     margin: 0;
+}
+.sentenced-setting .seconds:deep(input) {
+    min-width: 70px;
 }
 
 .vertical-align-middle {
