@@ -3,6 +3,12 @@
     <header>
         <h1 class="text-center">
             Might calculator
+            <v-icon
+                @click="exportSettingsCodeToClipboard()"
+                size="24"
+            >
+                mdi-share-variant
+            </v-icon>
         </h1>
     </header>
 
@@ -41,36 +47,18 @@
                 hide-details
             />
 
+            <!-- Might sources -->
             <v-expansion-panels
                 variant="accordion"
                 multiple
             >
-                <v-expansion-panel
+                <might-source-settings-expansion-panel
                     v-for="(mightSource, index) in mightSources"
                     :key="index"
-                >
-                    <v-expansion-panel-title>
-                        {{ mightSource.name }}
-                    </v-expansion-panel-title>
-                    <v-expansion-panel-text>
-                        <might-source-settings
-                            :model-value="mightSource"
-                            @update:model-value="(value) => mightSources[index] = value"
-                        />
-                        <v-row
-                            dense
-                            justify="center"
-                        >
-                            <v-btn
-                                @click.prevent="deleteSource(index)"
-                                prepend-icon="mdi-trash-can"
-                                color="error"
-                            >
-                                Delete
-                            </v-btn>
-                        </v-row>
-                    </v-expansion-panel-text>
-                </v-expansion-panel>
+                    :model-value="mightSource"
+                    @update:model-value="(value) => mightSources[index] = value"
+                    @delete="deleteSource(index)"
+                />
             </v-expansion-panels>
             <v-btn
                 style="width: 100%; margin-top: 10px;"
@@ -115,17 +103,18 @@ Chart.register(
     Legend
 );
 
-// import mightSources from './assets/might-sources/outside-overload-fire.json';
-// import mightSources from './assets/might-sources/testing.json';
-import mightSources from './assets/might-sources/offset-heal-scourge.json';
+// import exampleMightSource from './assets/might-sources/outside-overload-fire.json';
+// import exampleMightSource from './assets/might-sources/testing.json';
+import exampleMightSource from './assets/might-sources/offset-heal-scourge.json';
 import MightSourceTypes from './enums/MightSourceTypes.js';
 import SkillUsageTypes from './enums/SkillUsageTypes.js';
-import MightSourceSettings from './components/MightSourceSettings.vue';
+import MightSourceSettingsExpansionPanel from './components/MightSourceSettingsExpansionPanel.vue';
 
 export default {
     components: {
-        MightSourceSettings,
+        MightSourceSettingsExpansionPanel,
 
+        // These two components are needed for the graph to load in properly even if we don't use them directly.
         // eslint-disable-next-line vue/no-unused-components
         Window,
         // eslint-disable-next-line vue/no-reserved-component-names
@@ -136,7 +125,7 @@ export default {
             soloData: [],
             groupData: [],
 
-            mightSources: mightSources,
+            mightSources: [],
             loops: 2,
             loopDuration: 24.5,
             precision: 0.5,
@@ -144,6 +133,11 @@ export default {
         }
     },
     mounted() {
+        // If we were passed a settings code we'll import it, otherwise we'll serve an example setup for the user so they don't have to start from zero.
+        let urlParameters = new URLSearchParams(window.location.search);
+        if(urlParameters.has("settings")) this.importSettingsCode(urlParameters.get("settings"));
+        else this.mightSources = exampleMightSource;
+
         this.calculateGraphData();
     },
     methods: {
@@ -165,11 +159,12 @@ export default {
             this.groupData = groupData;
         },
         calculateMightAt(time, self = false) {
+            const activeMightSources = this.mightSources.filter((source) => !source.disabled);
             let mightSources = [];
 
             // Add loop sources for every loop
             for (let loop = 0; loop < Math.ceil(time / this.loopDuration); loop++) {
-                let loopSources = this.mightSources
+                let loopSources = activeMightSources
                     .filter((source) => {
                         return source.usage === SkillUsageTypes.IN_LOOP
                     })
@@ -185,7 +180,7 @@ export default {
             }
 
             // Add off-cd sources for every loop
-            const offCdMightSources = this.mightSources.filter((source) => source.usage === SkillUsageTypes.OFF_CD);
+            const offCdMightSources = activeMightSources.filter((source) => source.usage === SkillUsageTypes.OFF_CD);
             for (let sourceIndex = 0; sourceIndex < offCdMightSources.length; sourceIndex++) {
                 const source = offCdMightSources[sourceIndex];
                 for (let use = 0; source.offset + source.cooldown * use <= time; use++) {
@@ -197,6 +192,20 @@ export default {
                     });
                 }
             
+            }
+
+            // Add all one-off sources
+            const oneOffMightSources = activeMightSources.filter((source) => source.usage === SkillUsageTypes.ONCE);
+            for (let sourceIndex = 0; sourceIndex < oneOffMightSources.length; sourceIndex++) {
+                const source = oneOffMightSources[sourceIndex];
+                if(source.time <= time) {
+                    mightSources.push({
+                        "time": source.time,
+                        "amount": source.amount,
+                        "duration": source.duration,
+                        "type": source.type,
+                    });
+                }
             }
 
             // Insert all the might being shared
@@ -248,18 +257,42 @@ export default {
             this.mightSources.splice(index, 1);
         },
         addSource() {
-            let maxTime = Math.max(0, ...mightSources.filter((source) => !!source.time).map((source) => source.time));
+            let maxTime = Math.max(0, ...this.mightSources.filter((source) => !!source.time).map((source) => source.time));
             this.mightSources.push({
                 "name": "New might source",
+                "disabled": false,
                 "usage": SkillUsageTypes.IN_LOOP,
                 "time": maxTime,
                 "cooldown": null,
                 "offset": null,
                 "amount": 0,
                 "duration": 0,
-                "type": MightSourceTypes.AOE
+                "type": MightSourceTypes.AOE,
             });
-        }
+        },
+        exportSettingsCodeToClipboard() {
+            const settingsCode = btoa(JSON.stringify({
+                loops: this.loops,
+                loopDuration: this.loopDuration,
+                precision: this.precision,
+                sources: this.mightSources
+            }));
+            const link = `${window.location.protocol}//${window.location.host}?settings=${settingsCode}`;
+
+            if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link);
+                alert(`Successfully copied the settings link to your clipboard`);
+            } else {
+                alert(`Failed to automatically copy to your clipboard, you'll have to do it manually 😢\n\n${link}`);
+            }
+        },
+        importSettingsCode(code) {
+            let settings = JSON.parse(atob(code));
+            this.loops = settings?.loops ?? 2;
+            this.loopDuration = settings?.loopDuration ?? 24.5;
+            this.precision = settings?.precision ?? 0.5;
+            this.mightSources = settings?.sources ?? [];
+        },
     },
     computed: {
         graphData() {
@@ -294,7 +327,7 @@ export default {
                     }
                 }
             }
-        }
+        },
     },
     watch: {
         mightSources: {
@@ -332,17 +365,17 @@ main {
 	max-width: 1500px;
 	margin-left: auto;
 	margin-right: auto;
-	padding: 30px;
+	padding: 24px;
 
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
-	align-items: flex-start;
-	gap: 30px 30px;
+    align-items: stretch;
+	gap: 24px 24px;
 }
 
 .settings {
-	flex-basis: 300px;
+	flex-basis: 700px;
 	flex-grow: 1;
 }
 
@@ -355,5 +388,6 @@ main {
 	width: 100% !important;
 	height: auto !important;
     position: sticky;
+    top: 24px;
 }
 </style>

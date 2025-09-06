@@ -4,7 +4,8 @@
 		"time": 0,
 		"amount": 2,
 		"duration": 10,
-		"type": "self"
+		"type": "self",
+		"disabled": false
 	},
 	{
 		"usage": "off-cd",
@@ -12,24 +13,28 @@
 		"offset": 5,
 		"amount": 1,
 		"duration": 5,
-		"type": "self"
+		"type": "self",
+		"disabled": false
 	},
 	{
 		"time": 2,
 		"amount": 1,
 		"duration": 2,
-		"type": "aoe"
+		"type": "aoe",
+		"disabled": false
 	},
 	{
 		"time": 1,
 		"amount": 5,
 		"duration": 5,
-		"type": "heat-sync"
+		"type": "heat-sync",
+		"disabled": false
 	},
 	{
 		"time": 2,
 		"amount": 1,
 		"duration": 2,
-		"type": "heat-sync"
+		"type": "heat-sync",
+		"disabled": false
 	}
 ]

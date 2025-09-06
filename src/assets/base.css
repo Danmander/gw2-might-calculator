@@ -12,15 +12,21 @@
   src: local("Dyslexic"), url(./OpenDyslexic-Regular.otf) format("truetype");
 }
 
+html {
+  line-height: 1.5 !important;
+  font-family: "Dyslexic" !important;
+  font-size: 16px !important;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   min-height: 100vh;
   min-width: 100vw;
   color: rgb(var(--v-theme-background-lighten-2));
-  background: rgb(var(--v-theme-background));
-  line-height: 1.6;
-  font-family: "Dyslexic";
-  font-size: 18px;
-  text-rendering: optimizeLegibility;
+  background-color: rgb(var(--v-theme-background));
+  /* background-image: url(./images/background-texture.png);
+  background-size: cover;
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale; */
 }

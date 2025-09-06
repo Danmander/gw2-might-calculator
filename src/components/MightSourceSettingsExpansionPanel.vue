@@ -1,0 +1,288 @@
+<template>
+    <v-expansion-panel
+        class="skill"
+        :class="{ 'disabled': modelValue.disabled }"
+    >
+        <!-- Name & Actions -->
+        <template #title>
+            <span class="mr-2">
+                <v-icon @click.stop="editingName = !editingName">
+                    {{ editingName ? 'mdi-pencil-remove' : 'mdi-pencil' }}
+                </v-icon>
+            </span>
+            <span>
+                <v-text-field
+                    v-if="editingName"
+                    class="name-field"
+                    :model-value="modelValue.name"
+                    @update:model-value="(value) => updateValue('name', value)"
+                    type="text"
+                    density="compact"
+                    variant="underlined"
+                    hide-details
+                    @click.stop
+                    @keydown.enter="editingName = false"
+                />
+                <span v-else>
+                    {{ modelValue.name }}
+                </span>
+            </span>
+            
+            <v-spacer />
+            <span class="mr-2">
+                <v-checkbox-btn
+                    class="auto-size-checkbox"
+                    @click.stop
+                    :model-value="!modelValue.disabled"
+                    @update:model-value="(value) => updateValue('disabled', !value)"
+                    :ripple="false"
+                />
+            </span>
+            <span class="mr-4">
+                <v-icon
+                    @click.stop="$emit('delete')"
+                    color="error"
+                >
+                    mdi-trash-can
+                </v-icon>
+            </span>
+        </template>
+
+        <v-expansion-panel-text>
+            <v-row class="mt-1">
+                <!-- Type selection -->
+                <v-col cols="6">
+                    <v-select
+                        :model-value="modelValue.type"
+                        @update:model-value="(value) => updateValue('type', value)"
+                        :items="mightSourceTypesOptions"
+                        item-title="label"
+                        item-value="value"
+                        label="Type"
+                        density="compact"
+                        variant="underlined"
+                        hide-details
+                    />
+                </v-col>
+                <v-col cols="6">
+                    <v-select
+                        :model-value="modelValue.usage"
+                        @update:model-value="(value) => updateValue('usage', value)"
+                        :items="skillUsageTypesOptions"
+                        item-title="label"
+                        item-value="value"
+                        label="Usage"
+                        density="compact"
+                        variant="underlined"
+                        hide-details
+                    />
+                </v-col>
+
+                <!-- Value settings -->
+                <v-col
+                    cols="12"
+                    class="sentenced-setting"
+                >
+                    <!-- Might settings -->
+                    <v-text-field
+                        :model-value="modelValue.amount"
+                        @update:model-value="(value) => updateValue('amount', parseInt(value))"
+                        class="d-inline-block vertical-align-middle"
+                        type="number"
+                        density="compact"
+                        variant="underlined"
+                        step="1"
+                        hide-details
+                        single-line
+                    >
+                        <template #append-inner />
+                    </v-text-field>
+                    <img
+                        class="might-icon vertical-align-middle"
+                        src="../assets/images/might.png"
+                    >
+                    <span class="vertical-align-middle">
+                        for
+                    </span>
+                    <v-text-field
+                        :model-value="modelValue.duration"
+                        @update:model-value="(value) => updateValue('duration', parseFloat(value))"
+                        class="d-inline-block vertical-align-middle"
+                        type="number"
+                        density="compact"
+                        variant="underlined"
+                        :step="precision"
+                        hide-details
+                        single-line
+                    />
+                    <span class="vertical-align-middle">
+                        seconds
+                    </span>
+
+                    <!-- Usage settings -->
+                    <span v-if="modelValue.usage === SkillUsageTypes.IN_LOOP">
+                        <span class="vertical-align-middle">
+                            ,
+                        </span>
+                        <v-text-field
+                            :model-value="modelValue.time"
+                            @update:model-value="(value) => updateValue('time', parseFloat(value))"
+                            class="d-inline-block vertical-align-middle"
+                            type="number"
+                            density="compact"
+                            variant="underlined"
+                            :step="precision"
+                            hide-details
+                        />
+                        <span class="vertical-align-middle">
+                            seconds into each loop
+                        </span>
+                    </span>
+                    <span v-else-if="modelValue.usage === SkillUsageTypes.ONCE">
+                        <span class="vertical-align-middle">
+                            once at
+                        </span>
+                        <v-text-field
+                            :model-value="modelValue.time"
+                            @update:model-value="(value) => updateValue('time', parseFloat(value))"
+                            class="d-inline-block vertical-align-middle"
+                            type="number"
+                            density="compact"
+                            variant="underlined"
+                            :step="precision"
+                            hide-details
+                        />
+                        <span class="vertical-align-middle">
+                            seconds into the rotation
+                        </span>
+                    </span>
+                    <span v-else-if="modelValue.usage === SkillUsageTypes.OFF_CD">
+                        <span class="vertical-align-middle">
+                            every
+                        </span>
+                        <v-text-field
+                            :model-value="modelValue.cooldown"
+                            @update:model-value="(value) => updateValue('cooldown', parseFloat(value))"
+                            class="d-inline-block vertical-align-middle "
+                            type="number"
+                            density="compact"
+                            variant="underlined"
+                            :step="precision"
+                            hide-details
+                        />
+                        <span class="vertical-align-middle">
+                            seconds
+                        </span>
+                        <span class="vertical-align-middle">
+                            after
+                        </span>
+                        <v-text-field
+                            :model-value="modelValue.offset"
+                            @update:model-value="(value) => updateValue('offset', parseFloat(value))"
+                            class="d-inline-block vertical-align-middle"
+                            type="number"
+                            density="compact"
+                            variant="underlined"
+                            :step="precision"
+                            hide-details
+                        />
+                        <span class="vertical-align-middle">
+                            seconds
+                        </span>
+                    </span>
+                </v-col>
+            </v-row>
+        </v-expansion-panel-text>
+    </v-expansion-panel>
+</template>
+
+<script>
+import MightSourceTypes from '../enums/MightSourceTypes.js';
+import SkillUsageTypes from '../enums/SkillUsageTypes.js';
+
+export default {
+    emits: ["update:modelValue", 'delete'],
+    props: {
+        modelValue: {
+            type: Object,
+            required: true
+        },
+    },
+    data() {
+        return {
+            SkillUsageTypes,
+            skillUsageTypesOptions: [
+                { label: "One-off", value: SkillUsageTypes.ONCE },
+                { label: "In loop", value: SkillUsageTypes.IN_LOOP },
+                { label: "Off cooldown", value: SkillUsageTypes.OFF_CD },
+            ],
+            MightSourceTypes,
+            mightSourceTypesOptions: [
+                { label: 'Self might', value: MightSourceTypes.SELF },
+                { label: 'Aoe might', value: MightSourceTypes.AOE },
+                { label: 'Heat sync share', value: MightSourceTypes.HEAT_SYNC },
+            ],
+            editingName: false
+        }
+    },
+    methods: {
+        updateValue(key, value) {
+            this.$emit("update:modelValue", { ...this.modelValue, [key]: value });
+        }
+    }
+}
+</script>
+
+<style scoped>
+.might-icon {
+    height: 18px;
+}
+
+.sentenced-setting {
+    user-select: none;
+}
+.sentenced-setting:deep(.v-field__input) {
+    padding-top: 0;
+    padding-bottom: 0;
+    min-width: 70px;
+    width: fit-content;
+}
+.sentenced-setting:deep(input) {
+    margin: 0;
+}
+
+.vertical-align-middle {
+    vertical-align: middle;
+}
+
+.skill:deep(.v-expansion-panel-title) {
+    min-height: 52px !important;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+.skill.disabled {
+    opacity: 0.4;
+}
+
+.auto-size-checkbox {
+    --v-selection-control-size: auto
+}
+
+.name-field:deep(.v-field__input) {
+    padding-top: 0;
+    padding-bottom: 0;
+    min-height: auto;
+    min-width: 240px;
+}
+.name-field:deep(input) {
+    margin: 0;
+}
+.name-field,
+.name-field:deep(.v-field),
+.name-field:deep(.v-input),
+.name-field:deep(.v-field__input),
+.name-field:deep(.v-input__control) {
+    font-size: inherit;
+    letter-spacing: normal;
+}
+</style>
