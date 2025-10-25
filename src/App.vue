@@ -15,6 +15,15 @@
     <main>
         <!-- Settings -->
         <div class="settings">
+            <v-text-field
+                v-model="boonDuration"
+                type="number"
+                label="Boon duration"
+                :step="0.01"
+                :min="0"
+                :max="100"
+            />
+
             <v-slider
                 v-model="precision"
                 :label="`Precision (${precision.toFixed(2)}s)`"
@@ -130,7 +139,8 @@ export default {
             loops: 2,
             loopDuration: 24.5,
             precision: 0.5,
-            clampMight: true
+            clampMight: true,
+            boonDuration: 0
         }
     },
     mounted() {
@@ -173,7 +183,7 @@ export default {
                         return {
                             "time": source.time + this.loopDuration * loop,
                             "amount": source.amount,
-                            "duration": source.duration,
+                            "duration": source.duration * this.boonDurationMultiplier,
                             "type": source.type,
                         };
                     });
@@ -190,7 +200,7 @@ export default {
                     mightSources.push({
                         "time": source.offset + source.cooldown * use,
                         "amount": source.amount,
-                        "duration": source.duration,
+                        "duration": source.duration * this.boonDurationMultiplier,
                         "type": source.type,
                     });
                 }
@@ -205,7 +215,7 @@ export default {
                     mightSources.push({
                         "time": source.time,
                         "amount": source.amount,
-                        "duration": source.duration,
+                        "duration": source.duration * this.boonDurationMultiplier,
                         "type": source.type,
                     });
                 }
@@ -278,7 +288,8 @@ export default {
                 loops: this.loops,
                 loopDuration: this.loopDuration,
                 precision: this.precision,
-                sources: this.mightSources
+                sources: this.mightSources,
+                boonDuration: this.boonDuration
             }));
             const link = `${window.location.protocol}//${window.location.host}?settings=${settingsCode}`;
 
@@ -295,6 +306,7 @@ export default {
             this.loopDuration = settings?.loopDuration ?? 24.5;
             this.precision = settings?.precision ?? 0.5;
             this.mightSources = settings?.sources ?? [];
+            this.boonDuration = settings?.boonDuration ?? 0;
         },
     },
     computed: {
@@ -331,6 +343,9 @@ export default {
                 }
             }
         },
+        boonDurationMultiplier() {
+            return 1 + (this.boonDuration / 100);
+        }
     },
     watch: {
         mightSources: {
@@ -355,6 +370,11 @@ export default {
             },
         },
         clampMight: {
+            handler: function () {
+                this.calculateGraphData()
+            },
+        },
+        boonDuration: {
             handler: function () {
                 this.calculateGraphData()
             },
