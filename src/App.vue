@@ -184,6 +184,8 @@ export default {
             const offCdMightSources = activeMightSources.filter((source) => source.usage === SkillUsageTypes.OFF_CD);
             for (let sourceIndex = 0; sourceIndex < offCdMightSources.length; sourceIndex++) {
                 const source = offCdMightSources[sourceIndex];
+                if(source.cooldown === 0 || source.cooldown === null) continue; // Skip these 0 cooldown skills as it would create an infinite loop and they don't exist anyways
+
                 for (let use = 0; source.offset + source.cooldown * use <= time; use++) {
                     mightSources.push({
                         "time": source.offset + source.cooldown * use,
@@ -264,8 +266,8 @@ export default {
                 "disabled": false,
                 "usage": SkillUsageTypes.IN_LOOP,
                 "time": maxTime,
-                "cooldown": null,
-                "offset": null,
+                "cooldown": 0,
+                "offset": 0,
                 "amount": 0,
                 "duration": 0,
                 "type": MightSourceTypes.AOE,
