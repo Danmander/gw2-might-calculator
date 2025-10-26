@@ -124,6 +124,7 @@ import exampleMightSource from './assets/might-sources/offset-heal-scourge.json'
 import MightSourceTypes from './enums/MightSourceTypes.js';
 import SkillUsageTypes from './enums/SkillUsageTypes.js';
 import MightSourceSettingsExpansionPanel from './components/MightSourceSettingsExpansionPanel.vue';
+import LZString from 'lz-string';
 
 export default {
     components: {
@@ -151,8 +152,13 @@ export default {
     mounted() {
         // If we were passed a settings code we'll import it, otherwise we'll serve an example setup for the user so they don't have to start from zero.
         let urlParameters = new URLSearchParams(window.location.search);
-        if(urlParameters.has("settings")) this.importSettingsCode(urlParameters.get("settings"));
-        else this.mightSources = exampleMightSource;
+        if(urlParameters.has("settings")) {
+            const settingsVersion = urlParameters.has("version") ? Number.parseInt(urlParameters.get("version")) : 1;
+            this.importSettingsCode(urlParameters.get("settings"), settingsVersion);
+        }
+        else {
+            this.mightSources = exampleMightSource;
+        }
 
         this.calculateGraphData();
     },
@@ -299,14 +305,16 @@ export default {
             });
         },
         exportSettingsCodeToClipboard() {
-            const settingsCode = btoa(JSON.stringify({
+            const settings = {
                 loops: this.loops,
                 loopDuration: this.loopDuration,
                 precision: this.precision,
                 sources: this.mightSources,
                 boonDuration: this.boonDuration
-            }));
-            const link = `${window.location.protocol}//${window.location.host}?settings=${settingsCode}`;
+            };
+            const compressedSettingsCode = LZString.compressToEncodedURIComponent(JSON.stringify(settings));
+
+            const link = `${window.location.protocol}//${window.location.host}?version=2&settings=${compressedSettingsCode}`;
 
             if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(link);
@@ -315,8 +323,12 @@ export default {
                 alert(`Failed to automatically copy to your clipboard, you'll have to do it manually 😢\n\n${link}`);
             }
         },
-        importSettingsCode(code) {
-            let settings = JSON.parse(atob(code));
+        importSettingsCode(code, version = 1) {
+            // Decode the settings object based on the encoder version.
+            let settings = null;
+            if(version === 2) settings = JSON.parse(LZString.decompressFromEncodedURIComponent(code));
+            else settings = JSON.parse(atob(code)); // The way to decode the old settings code
+            
             this.loops = settings?.loops ?? 2;
             this.loopDuration = settings?.loopDuration ?? 24.5;
             this.precision = settings?.precision ?? 0.5;
