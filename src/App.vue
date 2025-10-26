@@ -16,12 +16,13 @@
         <!-- Settings -->
         <div class="settings">
             <v-text-field
-                v-model="boonDuration"
+                v-model.number="boonDuration"
                 type="number"
                 label="Boon duration"
                 :step="0.01"
                 :min="0"
                 :max="100"
+                density="compact"
             />
 
             <v-slider
@@ -67,6 +68,10 @@
                     :model-value="mightSource"
                     @update:model-value="(value) => mightSources[index] = value"
                     @delete="deleteSource(index)"
+                    :disable-move-up-button="index === 0"
+                    @move-up="moveSource(index, index - 1)"
+                    :disable-move-down-button="index === mightSources.length - 1"
+                    @move-down="moveSource(index, index + 1)"
                     :second-inputs-precision="precision"
                 />
             </v-expansion-panels>
@@ -140,7 +145,7 @@ export default {
             loopDuration: 24.5,
             precision: 0.5,
             clampMight: true,
-            boonDuration: 0
+            boonDuration: 100
         }
     },
     mounted() {
@@ -269,6 +274,16 @@ export default {
         deleteSource(index) {
             this.mightSources.splice(index, 1);
         },
+        moveSource(index, destinationIndex) {
+            // Check if the indexes are within bounds
+            if(index < 0 || index >= this.mightSources.length || destinationIndex < 0 || destinationIndex >= this.mightSources.length) return;
+
+            const source = this.mightSources[index];
+            const sourceAtDestinationIndex = this.mightSources[destinationIndex];
+
+            this.mightSources[index] = sourceAtDestinationIndex;
+            this.mightSources[destinationIndex] = source;
+        },
         addSource() {
             let maxTime = Math.max(0, ...this.mightSources.filter((source) => !!source.time).map((source) => source.time));
             this.mightSources.push({
@@ -344,7 +359,8 @@ export default {
             }
         },
         boonDurationMultiplier() {
-            return 1 + (this.boonDuration / 100);
+            const boonDuration = (typeof this.boonDuration === "number") ? this.boonDuration : 0;
+            return (100 + boonDuration) / 100;
         }
     },
     watch: {

@@ -29,6 +29,22 @@
             </span>
             
             <v-spacer />
+            <v-icon
+                @click.stop="$emit('move-up')"
+                class="move"
+                :class="{ 'disabled': disableMoveUpButton}"
+            >
+                mdi-arrow-up
+            </v-icon>
+            <span class="mr-2">
+                <v-icon
+                    @click.stop="$emit('move-down')"
+                    class="move"
+                    :class="{ 'disabled': disableMoveDownButton}"
+                >
+                    mdi-arrow-down
+                </v-icon>
+            </span>
             <span class="mr-2">
                 <v-checkbox-btn
                     class="auto-size-checkbox"
@@ -203,12 +219,20 @@ import MightSourceTypes from '../enums/MightSourceTypes.js';
 import SkillUsageTypes from '../enums/SkillUsageTypes.js';
 
 export default {
-    emits: ["update:modelValue", 'delete'],
+    emits: ["update:modelValue", 'delete', 'move-up', 'move-down'],
     props: {
         modelValue: {
             type: Object,
             required: true
         },
+        disableMoveUpButton: {
+            type: Boolean,
+            default: false
+        },
+        disableMoveDownButton: {
+            type: Boolean,
+            default: false
+        }
     },
     data() {
         return {
@@ -265,6 +289,10 @@ export default {
     padding-bottom: 8px;
 }
 .skill.disabled {
+    opacity: 0.4;
+}
+
+.move.disabled {
     opacity: 0.4;
 }
 

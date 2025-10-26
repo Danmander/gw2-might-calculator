@@ -5,7 +5,7 @@
 		"offset": 0,
 		"cooldown": 25.4,
 		"amount": 5,
-		"duration": 40,
+		"duration": 20,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -15,7 +15,7 @@
 		"offset": 0,
 		"cooldown": 6.9,
 		"amount": 2,
-		"duration": 12,
+		"duration": 6,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -25,7 +25,7 @@
 		"offset": 0,
 		"cooldown": 6.8,
 		"amount": 2,
-		"duration": 12,
+		"duration": 6,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -35,7 +35,7 @@
 		"offset": 0,
 		"cooldown": 14,
 		"amount": 8,
-		"duration": 18,
+		"duration": 9,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -45,7 +45,7 @@
 		"offset": 0,
 		"cooldown": 13.6,
 		"amount": 2,
-		"duration": 12,
+		"duration": 6,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -55,7 +55,7 @@
 		"offset": 1,
 		"cooldown": 13.6,
 		"amount": 2,
-		"duration": 12,
+		"duration": 6,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -65,7 +65,7 @@
 		"offset": 2,
 		"cooldown": 13.6,
 		"amount": 2,
-		"duration": 12,
+		"duration": 6,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -75,7 +75,7 @@
 		"offset": 3,
 		"cooldown": 13.6,
 		"amount": 2,
-		"duration": 12,
+		"duration": 6,
 		"type": "aoe",
 		"disabled": false
 	},
@@ -85,7 +85,7 @@
 		"offset": 0,
 		"cooldown": 12.75,
 		"amount": 3,
-		"duration": 18,
+		"duration": 9,
 		"type": "aoe",
 		"disabled": false
 	}
